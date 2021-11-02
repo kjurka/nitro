@@ -125,6 +125,13 @@ public:
               uint32_t bandEntriesPerLUT,
               nitf::LookupTable& lut);
     void init(const Representation&,
+        const std::string & subcategory,
+        const std::string & imageFilterCondition,
+        const std::string & imageFilterCode,
+        uint32_t numLUTs,
+        uint32_t bandEntriesPerLUT,
+        nitf::LookupTable & lut);
+    void init(const Representation&,
               const Subcategory&,
               const std::string& imageFilterCondition,
               const std::string& imageFilterCode,
