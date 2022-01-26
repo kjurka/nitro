@@ -21,6 +21,8 @@
  */
 
 #include <nitf/Field.hpp>
+#include <nitf/TestingTest.hpp>
+#include <nitf/FieldDescriptor.hpp>
 #include "TestCase.h"
 
 namespace
@@ -40,7 +42,7 @@ TEST_CASE(testCastOperator)
 
     field.set(1234567890);
     const uint32_t valUint32 = field;
-    TEST_ASSERT_EQ(valUint32, 1234567890);
+    TEST_ASSERT_EQ(valUint32, static_cast<uint32_t>(1234567890));
 #if SIZEOF_SIZE_T == 4
     const size_t valSizeT = field;
     TEST_ASSERT_EQ(valSizeT, 1234567890);
@@ -48,11 +50,11 @@ TEST_CASE(testCastOperator)
 
     field.set(uint64_t(1234567890987));
     const uint64_t valUint64 = field;
-    TEST_ASSERT_EQ(valUint64, 1234567890987);
+    TEST_ASSERT_EQ(valUint64, static_cast<uint64_t>(1234567890987));
 
 #if SIZEOF_SIZE_T == 8
     const size_t valSizeT = field;
-    TEST_ASSERT_EQ(valSizeT, 1234567890987);
+    TEST_ASSERT_EQ(valSizeT, static_cast<size_t>(1234567890987));
 #endif
 
     // Test signed values
@@ -96,10 +98,26 @@ TEST_CASE(testCastOperator)
     const std::string valStr = field;
     TEST_ASSERT_EQ(valStr, "ABCxyz              ");
 }
+TEST_CASE(testDescriptors)
+{
+    nitf::testing::Test1a test1a;
+    test1a.setF1("1234");
+
+    const auto descriptors = test1a.getDescriptors();
+    TEST_ASSERT_EQ(1, descriptors.size());
+    for (const auto& descriptor : descriptors)
+    {
+        TEST_ASSERT_EQ("f1", descriptor.name());
+        const auto field = descriptor.getField(test1a);
+        const std::string value = field; // nitf::Field will implicitly cast
+        TEST_ASSERT_EQ("1234", value);
+    }
+}
 }
 
 TEST_MAIN(
     (void)argc;
     (void)argv;
     TEST_CHECK(testCastOperator);
-)
+    TEST_CHECK(testDescriptors);
+    )

@@ -55,11 +55,12 @@ struct RotatingFileHandler : public StreamHandler
      * \param backupCount   The max number of backups
      * \param level         The minimum LogLevel
      */
-    RotatingFileHandler(const sys::Filesystem::path& fname, long maxBytes = 0,
+    RotatingFileHandler(const coda_oss::filesystem::path& fname, long maxBytes = 0,
                         int backupCount = 0, LogLevel level = LogLevel::LOG_NOTSET);
 
     virtual ~RotatingFileHandler();
 
+    RotatingFileHandler(const RotatingFileHandler&) = delete;
     RotatingFileHandler& operator=(const RotatingFileHandler&) = delete;
 };
 }

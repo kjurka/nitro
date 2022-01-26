@@ -302,7 +302,7 @@ NITFPRIV(nitf_List*) defaultFind(nitf_TRE* tre,
 
 NITFPRIV(NITF_BOOL) defaultSetField(nitf_TRE* tre,
     const char* tag,
-    NITF_DATA* data,
+    const NITF_DATA* data,
     size_t dataLength, nitf_Error* error)
 {
     nitf_Field* field = NULL;
@@ -371,7 +371,7 @@ NITFPRIV(NITF_BOOL) defaultClone(nitf_TRE *source,
     tre->priv = nitf_TREPrivateData_clone(sourcePriv, error);
     if (tre->priv == NULL)
         return NITF_FAILURE;
-    nitf_TREPrivateData* trePriv = tre->priv;
+    nitf_TREPrivateData* trePriv = (nitf_TREPrivateData*)tre->priv;
 
     /* just copy over the optional length */
     trePriv->length = sourcePriv->length;

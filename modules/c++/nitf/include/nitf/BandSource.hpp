@@ -25,6 +25,8 @@
 
 #include <string.h>
 #include <string>
+#include <std/span>
+#include <std/cstddef>
 
 #include "nitf/BandSource.h"
 #include "nitf/RowSource.h"
@@ -69,6 +71,13 @@ struct NITRO_NITFCPP_API MemorySource : public BandSource
      */
     MemorySource(const void* data, size_t size, nitf::Off start,
             int numBytesPerPixel, int pixelSkip);
+
+    MemorySource(std::span<const std::byte> span, nitf::Off start, int numBytesPerPixel, int pixelSkip)
+        : MemorySource(span.data(), span.size(), start, numBytesPerPixel, pixelSkip) {}
+
+    template<typename TSpanLike>
+    MemorySource(const TSpanLike& span, nitf::Off start, int pixelSkip)
+        : MemorySource(span.data(), span.size() * sizeof(span[0]), start, sizeof(span[0]), pixelSkip) {}
 };
 
 /*!
@@ -103,7 +112,7 @@ struct NITRO_NITFCPP_API FileSource : public BandSource
 
 struct NITRO_NITFCPP_API RowSourceCallback
 {
-    virtual ~RowSourceCallback()
+    virtual ~RowSourceCallback() // can't be "noexcpet" as that breaks derived classes
     {
     }
 
@@ -158,7 +167,7 @@ protected:
     void nextBlock(void* buf,
                            const void* block,
                            uint32_t /*blockNumber*/,
-                           uint64_t blockSize) override
+                           uint64_t blockSize) noexcept override
     {
         memcpy(buf, block, blockSize);
     }

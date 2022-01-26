@@ -31,15 +31,15 @@
 #include "logging/Setup.h"
 
 mem::auto_ptr<logging::Logger>
-logging::setupLogger(const coda_oss::filesystem::path& program_, 
+logging::setupLogger(const path& program_, 
                      const std::string& logLevel, 
-                     const coda_oss::filesystem::path& logFile_,
+                     const path& logFile_,
                      const std::string& logFormat,
                      size_t logCount,
                      size_t logBytes)
 {
     const auto program = program_.string();
-    mem::auto_ptr<logging::Logger> log(new logging::Logger(program));
+    std::unique_ptr<logging::Logger> log(new logging::Logger(program));
 
     // setup logging level
     std::string lev = logLevel;
@@ -89,6 +89,5 @@ logging::setupLogger(const coda_oss::filesystem::path& program_,
     logHandler->setFormatter(formatter.release());
     log->addHandler(logHandler.release(), true);
 
-    return log;
+    return mem::auto_ptr<logging::Logger>(log.release());
 }
-

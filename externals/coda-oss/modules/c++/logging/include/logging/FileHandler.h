@@ -33,6 +33,7 @@
 #include "logging/StreamHandler.h"
 #include <import/io.h>
 #include <import/sys.h>
+#include <import/mem.h>
 
 namespace logging
 {
@@ -42,9 +43,9 @@ namespace logging
  */
 struct FileHandler : public StreamHandler
 {
-    FileHandler(const sys::Filesystem::path& fname, LogLevel level = LogLevel::LOG_NOTSET,
+    FileHandler(const coda_oss::filesystem::path& fname, LogLevel level = LogLevel::LOG_NOTSET,
                 int creationFlags = sys::File::CREATE | sys::File::TRUNCATE) :
-        StreamHandler(new io::FileOutputStream(fname.string(), creationFlags), level)
+        StreamHandler(coda_oss::make_unique<io::FileOutputStream>(fname.string(), creationFlags), level)
     {
         // In case we are in append mode
         if (auto pStream = dynamic_cast<io::FileOutputStream*>(mStream.get()))
@@ -54,6 +55,7 @@ struct FileHandler : public StreamHandler
     }
     virtual ~FileHandler() = default;
 
+    FileHandler(const FileHandler&) = delete;
     FileHandler& operator=(const FileHandler&) = delete;
 
 };

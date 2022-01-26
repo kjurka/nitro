@@ -29,6 +29,7 @@
     <ClCompile Include="nitf\source\DownSampler.cpp" />
     <ClCompile Include="nitf\source\Extensions.cpp" />
     <ClCompile Include="nitf\source\Field.cpp" />
+    <ClCompile Include="nitf\source\FieldDescriptor.cpp" />
     <ClCompile Include="nitf\source\FieldWarning.cpp" />
     <ClCompile Include="nitf\source\FileHeader.cpp" />
     <ClCompile Include="nitf\source\FileSecurity.cpp" />
@@ -62,6 +63,7 @@
     <ClCompile Include="nitf\source\SegmentSource.cpp" />
     <ClCompile Include="nitf\source\SegmentWriter.cpp" />
     <ClCompile Include="nitf\source\SubWindow.cpp" />
+    <ClCompile Include="nitf\source\TestingTest.cpp" />
     <ClCompile Include="nitf\source\TextSegment.cpp" />
     <ClCompile Include="nitf\source\TextSubheader.cpp" />
     <ClCompile Include="nitf\source\TRE.cpp" />
@@ -92,9 +94,11 @@
     <ClInclude Include="nitf\include\nitf\DESegment.hpp" />
     <ClInclude Include="nitf\include\nitf\DESubheader.hpp" />
     <ClInclude Include="nitf\include\nitf\DownSampler.hpp" />
+    <ClInclude Include="nitf\include\nitf\Enum.hpp" />
     <ClInclude Include="nitf\include\nitf\exports.hpp" />
     <ClInclude Include="nitf\include\nitf\Extensions.hpp" />
     <ClInclude Include="nitf\include\nitf\Field.hpp" />
+    <ClInclude Include="nitf\include\nitf\FieldDescriptor.hpp" />
     <ClInclude Include="nitf\include\nitf\FieldWarning.hpp" />
     <ClInclude Include="nitf\include\nitf\FileHeader.hpp" />
     <ClInclude Include="nitf\include\nitf\FileSecurity.hpp" />
@@ -124,6 +128,7 @@
     <ClInclude Include="nitf\include\nitf\Object.hpp" />
     <ClInclude Include="nitf\include\nitf\Pair.hpp" />
     <ClInclude Include="nitf\include\nitf\PluginRegistry.hpp" />
+    <ClInclude Include="nitf\include\nitf\Property.hpp" />
     <ClInclude Include="nitf\include\nitf\Reader.hpp" />
     <ClInclude Include="nitf\include\nitf\Record.hpp" />
     <ClInclude Include="nitf\include\nitf\RESegment.hpp" />
@@ -133,10 +138,13 @@
     <ClInclude Include="nitf\include\nitf\SegmentWriter.hpp" />
     <ClInclude Include="nitf\include\nitf\SubWindow.hpp" />
     <ClInclude Include="nitf\include\nitf\System.hpp" />
+    <ClInclude Include="nitf\include\nitf\TestingTest.hpp" />
     <ClInclude Include="nitf\include\nitf\TextSegment.hpp" />
     <ClInclude Include="nitf\include\nitf\TextSubheader.hpp" />
     <ClInclude Include="nitf\include\nitf\TRE.hpp" />
+    <ClInclude Include="nitf\include\nitf\TREField.hpp" />
     <ClInclude Include="nitf\include\nitf\Utils.hpp" />
+    <ClInclude Include="nitf\include\nitf\Version.hpp" />
     <ClInclude Include="nitf\include\nitf\WriteHandler.hpp" />
     <ClInclude Include="nitf\include\nitf\Writer.hpp" />
     <ClInclude Include="nitf\include\nitf\WriterOptions.hpp" />
@@ -158,11 +166,11 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -191,7 +199,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)nitf\include\;$(ProjectDir)..\c\nrt\include\;$(ProjectDir)..\c\nitf\include\;$(SolutionDir)externals\coda-oss\install-$(Configuration)-$(Platform).$(PlatformToolset)\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)nitf\include\;$(ProjectDir)..\c\nrt\include\;$(ProjectDir)..\c\nitf\include\;$(SolutionDir)externals\coda-oss\out\install\$(Platform)-$(Configuration)\include\;$(SolutionDir)externals\coda-oss\install-$(Configuration)-$(Platform).$(PlatformToolset)\include\</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>pch.h</ForcedIncludeFiles>
@@ -204,15 +212,16 @@
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>
       </SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)externals\coda-oss\install-$(Configuration)-$(Platform).$(PlatformToolset)\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)externals\coda-oss\out\install\$(Platform)-$(Configuration)\lib\;$(SolutionDir)externals\coda-oss\install-$(Configuration)-$(Platform).$(PlatformToolset)\lib\</AdditionalLibraryDirectories>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)externals\coda-oss\install-$(Configuration)-$(Platform).$(PlatformToolset)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)externals\coda-oss\out\install\$(Platform)-$(Configuration)\lib\;$(SolutionDir)externals\coda-oss\install-$(Configuration)-$(Platform).$(PlatformToolset)\lib\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -222,7 +231,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)nitf\include\;$(ProjectDir)..\c\nrt\include\;$(ProjectDir)..\c\nitf\include\;$(SolutionDir)externals\coda-oss\install-$(Configuration)-$(Platform).$(PlatformToolset)\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)nitf\include\;$(ProjectDir)..\c\nrt\include\;$(ProjectDir)..\c\nitf\include\;$(SolutionDir)externals\coda-oss\out\install\$(Platform)-$(Configuration)\include\;$(SolutionDir)externals\coda-oss\install-$(Configuration)-$(Platform).$(PlatformToolset)\include\</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>pch.h</ForcedIncludeFiles>
@@ -239,10 +248,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)externals\coda-oss\install-$(Configuration)-$(Platform).$(PlatformToolset)\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)externals\coda-oss\out\install\$(Platform)-$(Configuration)\lib\;$(SolutionDir)externals\coda-oss\install-$(Configuration)-$(Platform).$(PlatformToolset)\lib\</AdditionalLibraryDirectories>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)externals\coda-oss\install-$(Configuration)-$(Platform).$(PlatformToolset)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)externals\coda-oss\out\install\$(Platform)-$(Configuration)\lib\;$(SolutionDir)externals\coda-oss\install-$(Configuration)-$(Platform).$(PlatformToolset)\lib\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -229,7 +229,7 @@ public:
     NITF_DATA* popBack();
 
     //! Constructor
-    List();
+    List() noexcept(false);
 
     //! Clone
     nitf::List clone(NITF_DATA_ITEM_CLONE cloner) const;
@@ -292,6 +292,7 @@ public:
 
     //! Returns the data at the given index
     NITF_DATA* operator[] (size_t index);
+    const NITF_DATA* operator[] (size_t index) const;
 
 private:
     mutable nitf_Error error{};

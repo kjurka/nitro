@@ -47,7 +47,7 @@ ImageSubheader::ImageSubheader(nitf_ImageSubheader * x)
     getNativeOrThrow();
 }
 
-ImageSubheader::ImageSubheader() : ImageSubheader(nitf_ImageSubheader_construct(&error))
+ImageSubheader::ImageSubheader() noexcept(false) : ImageSubheader(nitf_ImageSubheader_construct(&error))
 {
     setManaged(false);
 }
@@ -108,6 +108,15 @@ void ImageSubheader::setPixelInformation(std::string pvtype,
     if (!x)
         throw nitf::NITFException(&error);
 }
+void ImageSubheader::setPixelInformation(PixelValueType pvtype,
+                         uint32_t nbpp,
+                         uint32_t abpp,
+                         std::string justification,
+                         ImageRepresentation irep, std::string icat,
+                         std::vector<nitf::BandInfo>& bands)
+{
+    setPixelInformation(to_string(pvtype), nbpp, abpp, justification, to_string(irep), icat, bands);
+}
 
 void ImageSubheader::setBlocking(uint32_t numRows,
                      uint32_t numCols,
@@ -120,6 +129,14 @@ void ImageSubheader::setBlocking(uint32_t numRows,
         &error);
     if (!x)
         throw nitf::NITFException(&error);
+}
+void ImageSubheader::setBlocking(uint32_t numRows,
+                     uint32_t numCols,
+                     uint32_t numRowsPerBlock,
+                     uint32_t numColsPerBlock,
+                     BlockingMode imode)
+{
+    setBlocking(numRows, numCols, numRowsPerBlock, numColsPerBlock, to_string(imode));
 }
 
 void ImageSubheader::computeBlocking(uint32_t numRows,
@@ -160,8 +177,8 @@ void ImageSubheader::createBands(uint32_t numBands)
 }
 
 
-void ImageSubheader::setCornersFromLatLons(nitf::CornersType type,
-                                           double corners[4][2])
+void ImageSubheader::setCornersFromLatLons_(nitf::CornersType type,
+                                           const double (*corners)[2])
 {
     const NITF_BOOL x = nitf_ImageSubheader_setCornersFromLatLons(getNativeOrThrow(),
                                                             type,
@@ -172,7 +189,7 @@ void ImageSubheader::setCornersFromLatLons(nitf::CornersType type,
 
 }
 
-void ImageSubheader::getCornersAsLatLons(double corners[4][2]) const
+void ImageSubheader::getCornersAsLatLons_(double (*corners)[2]) const
 {
     const NITF_BOOL x = nitf_ImageSubheader_getCornersAsLatLons(getNativeOrThrow(),
                                                           corners,
