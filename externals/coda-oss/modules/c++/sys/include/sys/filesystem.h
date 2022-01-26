@@ -18,8 +18,8 @@
  * License along with this program; If not, http://www.gnu.org/licenses/.
  *
  */
-#ifndef CODA_OSS_sys_Filesystem_h_INCLUDED_
-#define CODA_OSS_sys_Filesystem_h_INCLUDED_
+#ifndef CODA_OSS_sys_filesystem_h_INCLUDED_
+#define CODA_OSS_sys_filesystem_h_INCLUDED_
 #pragma once
 
 //
@@ -32,12 +32,13 @@
 #include <string>
 #include <ostream>
 
-#include "CPlusPlus.h"
+#include "sys/CPlusPlus.h"
+#include "coda_oss/namespace_.h" // get something in the "coda_oss" namespace
 
-namespace sys
+namespace coda_oss // should be in coda_oss, but implementation needs sys::Path
 {
 // http://en.cppreference.com/w/cpp/filesystem
-namespace Filesystem
+namespace filesystem
 {
   struct path; // forward
   namespace details
@@ -47,13 +48,13 @@ namespace Filesystem
   }
 
   // https://en.cppreference.com/w/cpp/filesystem/file_type
-  enum class FileType
+  enum class file_type // match C++17 spelling for easier transition from our C++11 work-around
   {
-      None = 0,
-      NotFound = 1,
-      Regular,
-      Directory,
-      Unknown
+      none = 0,
+      not_found = 1,
+      regular,
+      directory,
+      unknown 
   };
 
 // http://en.cppreference.com/w/cpp/filesystem/path
@@ -133,7 +134,7 @@ bool is_directory(const path& p);  // https://en.cppreference.com/w/cpp/filesyst
 bool exists(const path& p);  // https://en.cppreference.com/w/cpp/filesystem/exists
 }
 
-#define CODA_OSS_sys_Filesystem 201703L  // c.f., __cpp_lib_filesystem
+#define CODA_OSS_coda_oss_filesystem 201703L  // c.f., __cpp_lib_filesystem
 }
 
-#endif  // CODA_OSS_sys_Filesystem_h_INCLUDED_
+#endif  // CODA_OSS_sys_filesystem_h_INCLUDED_
