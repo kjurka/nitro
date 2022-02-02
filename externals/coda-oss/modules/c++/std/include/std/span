@@ -23,7 +23,6 @@
 #pragma once
 
 // Make it (too?) easy for clients to get our various std:: implementations
-
 #include "coda_oss/span.h"
 
 #if CODA_OSS_cpp20
