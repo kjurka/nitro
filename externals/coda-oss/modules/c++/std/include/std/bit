@@ -23,6 +23,7 @@
 #pragma once
 
 // Make it (too?) easy for clients to get our various std:: implementations
+
 #include "coda_oss/bit.h"
 
 #include "coda_oss/CPlusPlus.h"
