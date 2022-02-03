@@ -25,7 +25,6 @@
 #include <memory>
 
 // Make it (too?) easy for clients to get our various std:: implementations
-
 #include "coda_oss/memory.h"
 
 #if defined(__cpp_lib_make_unique) && (__cpp_lib_make_unique >= 201304L) // https://en.cppreference.com/w/cpp/utility/feature_test
