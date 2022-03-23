@@ -39,4 +39,9 @@
 #pragma warning(disable: 4505) // '...': unreferenced local function has been removed
 #pragma warning(disable: 4514) // '...' : unreferenced inline function has been removed
 
+#pragma comment(lib, "Ws2_32")
+
+#pragma comment(lib, "jpeg")
+
 #define OPJ_STATIC
+#pragma comment(lib, "openjpeg")

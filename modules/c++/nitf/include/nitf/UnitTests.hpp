@@ -26,11 +26,13 @@
 
 #include <string>
 
+#include "nitf/exports.hpp"
+
 namespace nitf
 {
 	namespace Test
 	{
-		std::string buildPluginsDir();
+		NITRO_NITFCPP_API std::string buildPluginsDir();
 	}
 }
 
