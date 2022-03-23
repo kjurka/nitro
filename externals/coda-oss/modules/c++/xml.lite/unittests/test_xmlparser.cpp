@@ -22,6 +22,7 @@
 
 #include <std/string>
 #include <std/filesystem>
+#include <std/optional>
 
 #include "io/StringStream.h"
 #include "io/FileInputStream.h"
@@ -31,6 +32,7 @@
 #include <TestCase.h>
 
 #include "xml/lite/MinidomParser.h"
+#include "xml/lite/Validator.h"
 
 static const std::string text("TEXT");
 static const std::string strXml = "<root><doc><a>" + text + "</a></doc></root>";
@@ -53,7 +55,7 @@ namespace fs = std::filesystem;
 
 static fs::path findRoot(const fs::path& p)
 {
-    if (fs::is_regular_file(p / "LICENSE")  && fs::is_regular_file(p / "README.md")  && fs::is_regular_file(p / "CMakeLists.txt"))
+    if (is_regular_file(p / "LICENSE")  && is_regular_file(p / "README.md")  && is_regular_file(p / "CMakeLists.txt"))
     {
         return p;
     }
@@ -155,14 +157,16 @@ TEST_CASE(testXmlUtf8)
     const auto expected = platfromText_;
     TEST_ASSERT_EQ(actual, expected);
 
-    auto encoding = a.getEncoding();
+    std::optional<xml::lite::StringEncoding> encoding; // avoid compiler warning about possible uninitialized variable
+    encoding = a.getEncoding();
     TEST_ASSERT_TRUE(encoding.has_value());
-    TEST_ASSERT(encoding == PlatformEncoding);
+    TEST_ASSERT(*encoding == PlatformEncoding);
 
     // different getCharacterData() API
     encoding = a.getCharacterData(actual);
     TEST_ASSERT_EQ(actual, expected);
-    TEST_ASSERT(encoding == PlatformEncoding);
+    TEST_ASSERT_TRUE(encoding.has_value());
+    TEST_ASSERT(*encoding == PlatformEncoding);
 }
 
 TEST_CASE(testXml_setCharacterData)
@@ -241,8 +245,7 @@ TEST_CASE(testXmlParseAndPrintUtf8)
 
 static void testReadEncodedXmlFile(const std::string& testName, const std::string& xmlFile, bool preserveCharacterData)
 {
-    const auto coda_oss = findRoot();
-    const auto unittests = coda_oss / "modules" / "c++" / "xml.lite" / "unittests";
+    const auto unittests = findRoot() / "modules" / "c++" / "xml.lite" / "unittests";
 
     const auto path = unittests / xmlFile;
     if (!exists(path))  // running in "externals" of a different project
@@ -292,8 +295,7 @@ TEST_CASE(testReadEncodedXmlFiles)
 
 static void testReadXmlFile(const std::string& testName, const std::string& xmlFile, bool preserveCharacterData)
 {
-    const auto coda_oss = findRoot();
-    const auto unittests = coda_oss / "modules" / "c++" / "xml.lite" / "unittests";
+    const auto unittests =  findRoot() / "modules" / "c++" / "xml.lite" / "unittests";
 
     const auto path = unittests / xmlFile;
     if (!exists(path))  // running in "externals" of a different project
@@ -370,8 +372,7 @@ static bool find_string(io::FileInputStream& stream, const std::string& s)
 TEST_CASE(testReadEmbeddedXml)
 {
     // This is a binary file with XML burried in it somewhere
-    const auto coda_oss = findRoot();
-    const auto unittests = coda_oss / "modules" / "c++" / "xml.lite" / "unittests";
+    const auto unittests = findRoot() / "modules" / "c++" / "xml.lite" / "unittests";
 
     const auto path = unittests / "embedded_xml.bin";
     if (!exists(path))  // running in "externals" of a different project
@@ -407,6 +408,103 @@ TEST_CASE(testReadEmbeddedXml)
     TEST_ASSERT_EQ(classificationText_utf_8, u8_characterData_);
 }
 
+static void testValidateXmlFile_(const std::string& testName, const std::string& xmlFile, const xml::lite::StringEncoding* pEncoding)
+{
+    const auto unittests = findRoot() / "modules" / "c++" / "xml.lite" / "unittests";
+
+    const auto xsd = unittests / "doc.xsd";
+    if (!exists(xsd))  // running in "externals" of a different project
+    {
+        std::clog << "Path does not exist: '" << xsd << "'\n";
+        return;
+    }
+    const auto path = unittests / xmlFile;
+
+    const std::vector<std::filesystem::path> schemaPaths{xsd.parent_path()}; // fs::path -> new string-conversion code
+    const xml::lite::Validator validator(schemaPaths, nullptr /*log*/);
+
+    io::FileInputStream fis(path);
+    std::vector<xml::lite::ValidationInfo> errors;
+    const auto result = (pEncoding == nullptr) ? validator.validate(fis, path.string() /*xmlID*/, errors) :
+        validator.validate(fis, *pEncoding, path.string() /*xmlID*/, errors);
+    for (const auto& error : errors)
+    {
+        std::clog << error.toString() << "\n";
+    }
+    TEST_ASSERT_FALSE(result);
+    TEST_ASSERT_TRUE(errors.empty());
+}
+static void testValidateXmlFile(const std::string& testName, const std::string& xmlFile)
+{
+    testValidateXmlFile_(testName, xmlFile, nullptr /*pEncoding*/);
+}
+static void testValidateXmlFile(const std::string& testName, const std::string& xmlFile, xml::lite::StringEncoding encoding)
+{
+    testValidateXmlFile_(testName, xmlFile, &encoding);
+}
+TEST_CASE(testValidateXmlFile)
+{
+    testValidateXmlFile(testName, "ascii.xml");
+    testValidateXmlFile(testName, "ascii_encoding_utf-8.xml");
+
+    // legacy validate() API, new string conversion
+    testValidateXmlFile(testName, "utf-8.xml");
+    testValidateXmlFile(testName, "encoding_utf-8.xml");
+
+    // new validate() API
+    testValidateXmlFile(testName, "utf-8.xml", xml::lite::StringEncoding::Utf8);
+    testValidateXmlFile(testName, "encoding_utf-8.xml", xml::lite::StringEncoding::Utf8);
+    testValidateXmlFile(testName, "windows-1252.xml", xml::lite::StringEncoding::Windows1252);
+    testValidateXmlFile(testName, "encoding_windows-1252.xml", xml::lite::StringEncoding::Windows1252);
+}
+
+static void testValidateXmlFileLegacy(const std::string& testName, const std::string& xmlFile, bool success=true)
+{
+    const auto unittests = findRoot() / "modules" / "c++" / "xml.lite" / "unittests";
+
+    const auto xsd = unittests / "doc.xsd";
+    if (!exists(xsd))  // running in "externals" of a different project
+    {
+        std::clog << "Path does not exist: '" << xsd << "'\n";
+        return;
+    }
+    const auto path = unittests / xmlFile;
+
+    const std::vector<std::string> schemaPaths{xsd.parent_path().string()}; // std::string -> legacy behavior
+    const xml::lite::Validator validator(schemaPaths, nullptr /*log*/);
+
+    io::FileInputStream fis(path);
+    std::vector<xml::lite::ValidationInfo> errors;
+    const auto result = validator.validate(fis, path.string() /*xmlID*/, errors);
+    for (const auto& error : errors)
+    {
+        std::clog << error.toString() << "\n";
+    }
+    if (success)
+    {
+        TEST_ASSERT_FALSE(result);
+        TEST_ASSERT_TRUE(errors.empty());
+    }
+    else
+    {
+        TEST_ASSERT_TRUE(result); // errors
+        TEST_ASSERT_FALSE(errors.empty());
+    }
+}
+TEST_CASE(testValidateXmlFileLegacy)
+{
+    // these two work on all platforms
+    testValidateXmlFile(testName, "ascii.xml");
+    testValidateXmlFile(testName, "ascii_encoding_utf-8.xml");
+
+    // These are OK on Windows but fail on Linux; this is as-expected with "legacy" string conversion.
+    constexpr auto success = sys::Platform == sys::PlatformType::Windows ? true : false;
+    testValidateXmlFileLegacy(testName, "utf-8.xml", success);
+    testValidateXmlFileLegacy(testName, "encoding_utf-8.xml", success);
+    testValidateXmlFileLegacy(testName, "windows-1252.xml", success);
+    testValidateXmlFileLegacy(testName, "encoding_windows-1252.xml", success);
+}
+
 int main(int, char**)
 {
     TEST_CHECK(testXmlParseSimple);
@@ -424,4 +522,7 @@ int main(int, char**)
     TEST_CHECK(testReadEncodedXmlFiles);
     TEST_CHECK(testReadXmlFiles);
     TEST_CHECK(testReadEmbeddedXml);
+
+    TEST_CHECK(testValidateXmlFile);
+    TEST_CHECK(testValidateXmlFileLegacy);
 }
