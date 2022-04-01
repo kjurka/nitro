@@ -25,14 +25,15 @@
 #pragma once
 
 #include <string>
-
-#include "nitf/exports.hpp"
+#include <std/filesystem>
 
 namespace nitf
 {
 	namespace Test
 	{
-		NITRO_NITFCPP_API std::string buildPluginsDir();
+		std::string buildPluginsDir();
+		std::filesystem::path buildFileDir(const std::filesystem::path& relativePath);
+		std::filesystem::path findInputFile(const std::filesystem::path&);
 	}
 }
 
