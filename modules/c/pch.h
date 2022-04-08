@@ -44,9 +44,5 @@
 
 #pragma comment(lib, "jpeg")
 
-#pragma comment(lib, "Ws2_32")
-
-#pragma comment(lib, "jpeg")
-
 #define OPJ_STATIC
 #pragma comment(lib, "openjpeg")
