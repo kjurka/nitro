@@ -2,36 +2,25 @@
 #define NITRO_nitf_exports_hpp_INCLUDED_
 #pragma once
 
-// Need to define either NITRO_NITFCPP_LIB (the default) or NITRO_NITFCPP_DLL
+// Need to specify how this module will be consumed, either NITRO_NITFCPP_LIB (static library)
+// or NITRO_NITFCPP_DLL (aka "shared" library).
 //
-// Use Windows naming conventions (DLL, LIB) because this really only matters
-// for _MSC_VER, see below.
+// Use Windows naming conventions (DLL, LIB) because this really only matters for _MSC_VER, see below.
 #if !defined(NITRO_NITFCPP_LIB) && !defined(NITRO_NITFCPP_DLL)
-    // Building a static library (not a DLL) is the default.
-    #if (defined(_WINDLL) || defined(NITRO_NITFCPP_EXPORTS)) && !defined(_LIB)
-        // Visual Studio projects define _WINDLL or _LIB, but not the compiler
-        #define NITRO_NITFCPP_DLL 1
-    #else
-        // Visual Studio, but not the compiler, may define _LIB
-        #define NITRO_NITFCPP_LIB 1
-    #endif
+    //#define NITRO_NITFCPP_LIB 1
+    #define NITRO_NITFCPP_DLL 1
 #endif
-
-#if !defined(NITRO_NITFCPP_DLL)
-    #if defined(NITRO_NITFCPP_EXPORTS) || defined(_WINDLL)
+#if defined(NITRO_NITFCPP_EXPORTS)
+    #if defined(NITRO_NITFCPP_LIB)
         #error "Can't export from a LIB'"
     #endif
 
-    #if !defined(NITRO_NITFCPP_LIB)
+    #if !defined(NITRO_NITFCPP_DLL)
         #define NITRO_NITFCPP_DLL 1
-
-        #if !defined(NITRO_NITFCPP_EXPORTS)
-            #define NITRO_NITFCPP_EXPORTS 1
-        #endif
-        #if defined(_WINDLL) 
-            #define _WINDLL 1
-        #endif
     #endif
+#endif
+#if defined(NITRO_NITFCPP_LIB) && defined(NITRO_NITFCPP_DLL)
+    #error "Both NITRO_NITFCPP_LIB and NITRO_NITFCPP_DLL are #define'd'"
 #endif
 
 // The following ifdef block is the standard way of creating macros which make exporting
