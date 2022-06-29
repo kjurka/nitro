@@ -7,13 +7,8 @@
 //
 // Use Windows naming conventions (DLL, LIB) because this really only matters for _MSC_VER, see below.
 #if !defined(NITRO_NITFCPP_LIB) && !defined(NITRO_NITFCPP_DLL)
-    //#define NITRO_NITFCPP_LIB 1
-    #if defined(NITRO_NITFCPP_EXPORTS) // i.e., in Visual Studio (for now); see below
-        #define NITRO_NITFCPP_DLL 1
-    #else
-        // not ready to build as a DLL in WAF/CMake yet
-        #define NITRO_NITFCPP_LIB 1
-    #endif
+    #define NITRO_NITFCPP_LIB 1
+    //#define NITRO_NITFCPP_DLL 1
 #endif
 #if defined(NITRO_NITFCPP_EXPORTS)
     #if defined(NITRO_NITFCPP_LIB)
